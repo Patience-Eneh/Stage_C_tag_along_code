@@ -1,0 +1,34 @@
+import requests
+from bs4 import BeautifulSoup as bs
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+f = requests.get('https://uk.finance.yahoo.com/most-active/')
+f.status_code
+f.text
+soup = bs(f.text)
+#td values in the row
+#tr body
+# th title
+
+values = []
+tables = soup.find('table', class_ = 'W(100%)')
+table_rows = tables.find_all('tr')
+for row in table_rows[1:]:
+    rows = row.find_all('td')
+    
+
+    row_value = []
+    for data in rows[0:]:
+        stock_rows = data.text
+        row_value.append(stock_rows)
+    values.append(row_value)
+
+table_title = tables.find_all('th')
+for title in table_title[0:]:
+    headings = [title.text for title in table_title] #putting in a list|
+    df = pd.DataFrame(values, columns = headings)
+
+df
+
